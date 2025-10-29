@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const postSchema = new mongoose.Schema(
   {
-    title: {
+    tittle: {
       type: String,
       required: true,
     },
@@ -17,7 +17,7 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    autor: {
+    author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

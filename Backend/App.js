@@ -1,10 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const {
-  GlobalErrorHandler,notfound,} = require("./middleware/Gerrorhandler.js");
+  GlobalErrorHandler,
+  notfound,
+} = require("./middleware/Gerrorhandler.js");
 //===================================
 const userRoutes = require("./Routes/userRoute/userRoutes");
 const create = require("./Routes/categaryRoutes/createcategaryRoutes.js");
+const post = require("./Routes/postRoutes/postRouter.js");
 //============================
 const connectdb = require("./config/db");
 //====================================
@@ -18,9 +21,11 @@ connectdb();
 app.use(express.json());
 //======================
 // routes
-app.use("/api/users/v1", userRoutes);
+app.use("/api/v1/users", userRoutes);
 //========================
 app.use("/api/v1/categories", create);
+//========================
+app.use("/api/v1/posts", post);
 //========================
 //404 error handler/page not found
 app.use(notfound);
