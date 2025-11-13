@@ -52,7 +52,9 @@ const login = asyncHandler(async (req, res, next) => {
   }
   user.lastlogin = Date.now();
   await user.save();
-
+  //===========================================
+  const { password: userpassword, ...safeuser } = user.toObject(); //remove password from user object
+  //===========================================
   //send response to client
   res.json({
     status: "success",
@@ -62,7 +64,7 @@ const login = asyncHandler(async (req, res, next) => {
     role: user?.role,
     token: tocken(user),
     message: "User logged in successfully",
-    user,
+    user: safeuser,
   });
   // } catch (error) {
   //   next(error);
@@ -82,10 +84,84 @@ const pview = asyncHandler(async (req, res, next) => {
   //   next(error);
   // }
 });
+//============================================================
+//block user
+//access private/admin
+//route put/api/v1/users/block/:userid
+
+const blockUser = asyncHandler(async (req, res, next) => {
+  //find user by id and update status to blocked
+  const useridtoBlock = req.params.useridtoBlock;
+  //user he yha nhi data base me
+  const userBlock = await usermodel.findById(useridtoBlock);
+  if (!userBlock) {
+    let error = new Error("User not found");
+    next(error);
+    return;
+  }
+  // get the current user id
+  const loginuserid = req?.user?.id;
+
+  //check self user blocking
+  //use loadash lib ys fir tostring
+  if (useridtoBlock.toString() === loginuserid.toString()) {
+    let error = new Error("You cannot block yourself");
+    next(error);
+    return;
+  }
+  //get the current user object from db
+  const currentUser = await usermodel.findById(loginuserid);
+  //! check useridBlock is already blocked or not
+  if (currentUser.blockuser.includes(useridtoBlock)) {
+    let error = new Error("User is blocked");
+    next(error);
+    return;
+  }
+  // push useridBlock to blockuser array
+  currentUser.blockuser.push(useridtoBlock);
+  await currentUser.save();
+  res.json({ status: "success", message: "User blocked successfully" });
+});
+//===========================================
+// unblock user
+//access private/admin
+//route put/api/v1/users/unblock/:userid
+
+const unblockUser = asyncHandler(async (req, res, next) => {
+  const useridTOUnblock = req.params.useridTOUnblock;
+  const usertoUnblock = await usermodel.findById(useridTOUnblock);
+  if (!usertoUnblock) {
+    let error = new Error("User not found");
+    next(error);
+    return;
+  }
+  //get current login user id
+  const loginUserId = req?.user?._id;
+  const currentUser = await usermodel.findById(loginUserId);
+  //check if user is blocked or not and is already
+  if (!currentUser.blockuser.includes(useridTOUnblock)) {
+    let error = new Error("User is not blocked");
+    next(error);
+    return;
+  }
+
+  //remove user from blockuser array
+  
+  currentUser.blockuser = currentUser.blockuser.filter((id) => {
+    return id.toString() !== useridTOUnblock;
+  });
+
+  //save current user and update db
+  await currentUser.save();
+
+  res.json({ status: "success", message: "User unblocked successfully" });
+});
 
 //============================
 module.exports = {
   registerUser,
   login,
   pview,
+  blockUser,
+  unblockUser,
 };

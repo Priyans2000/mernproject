@@ -24,7 +24,7 @@ const isLogedin = (req, res, next) => {
       const userData = await user
         .findById(userid)
         .select("name ,email ,role , _id");
-      //   console.log("user", userData);//fetch user data from database
+        // console.log("user", userData);//fetch user data from database
       req.user = userData; //attach user data to request object for further use
       next();
     }

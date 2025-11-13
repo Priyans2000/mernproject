@@ -8,6 +8,7 @@ const {
 const userRoutes = require("./Routes/userRoute/userRoutes");
 const create = require("./Routes/categaryRoutes/createcategaryRoutes.js");
 const post = require("./Routes/postRoutes/postRouter.js");
+const comments = require("./Routes/commentRouter/commentRoutes.js");
 //============================
 const connectdb = require("./config/db");
 //====================================
@@ -26,6 +27,8 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/categories", create);
 //========================
 app.use("/api/v1/posts", post);
+//========================
+app.use("/api/v1/comments",comments);
 //========================
 //404 error handler/page not found
 app.use(notfound);

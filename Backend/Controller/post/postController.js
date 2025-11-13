@@ -52,4 +52,97 @@ const createPost = asyncHAndler(async (req, res, next) => {
     category: updatecategory,
   });
 });
-module.exports = { createPost };
+
+//================================================
+// get all posts
+//route get/api/v1/allposts
+//access public component
+const getallpost = asyncHAndler(async (req, res) => {
+  const allpost = await post.find({}).populate("author").populate("category");
+  //send response to client
+  res.json({
+    status: "success",
+    message: "all posts fetched successfully",
+    allpost,
+  });
+});
+//===============================================
+// get single post by id
+//route get/api/v1/posts/:id
+//access public component
+const getsinglePost = asyncHAndler(async (req, res) => {
+  const postId = req.params.id;
+  //fetch post by id
+  const fetchedpost = await post
+    .findById(postId)
+    .populate("author")
+    .populate("category");
+  if (!fetchedpost) {
+    res.json({
+      status: "success",
+      message: " post not fetched ",
+    });
+  } else {
+    res.json({
+      status: "success",
+      message: "post fetched successfully",
+      fetchedpost,
+    });
+  }
+});
+
+//================================================
+// delete post by id
+//route delete/api/v1/posts/:id
+//access private component
+
+const deletePost = asyncHAndler(async (req, res) => {
+  const postId = req.params.id;
+  //delete post by id and db
+  const delPost = await post.findByIdAndDelete(postId);
+  res.json({
+    status: "success",
+    message: "Post deleted successfully",
+  });
+  // if(delpost){
+  //   res.status(404);
+  //   throw new Error("Post not found");
+  // }else{
+  //   res.json({
+  //     status: "success",
+  //     message: "Post deleted successfully",
+  //     delPost,
+  //   });
+  // }
+});
+//================================================
+//update post by id
+//route put/api/v1/posts/:id
+//access private component
+
+const updatePost = asyncHAndler(async (req, res) => {
+  const postId = req.params.id;
+  const upost = req.body;
+  const udpost = await post.findByIdAndUpdate(postId, upost, {
+    new: true,
+    runValidators: true,
+  });
+  if (!udpost) {
+    res.status(404);
+    throw new Error("Post not found");
+  } else {
+    res.json({
+      status: "success",
+      message: "Post updated successfully",
+      udpost,
+    });
+  }
+});
+
+module.exports = {
+  createPost,
+  getallpost,
+  getsinglePost,
+  deletePost,
+  updatePost,
+};
