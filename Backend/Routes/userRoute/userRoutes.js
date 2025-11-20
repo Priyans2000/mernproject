@@ -5,6 +5,8 @@ const {
   pview,
   blockUser,
   unblockUser,
+  viewuaserProfile,
+  followUser,
 } = require("../../Controller/users/userController.js");
 const isLogedin = require("../../middleware/isLogedin.js");
 
@@ -21,5 +23,8 @@ router.get("/profile", isLogedin, pview);
 router.put("/block/:useridtoBlock", isLogedin, blockUser);
 // unblock user
 router.put("/unblock/:useridTOUnblock", isLogedin, unblockUser);
-
+//view user profile
+router.get("/view-profile/:userprofileId", isLogedin, viewuaserProfile);
+//follow user
+router.put("/follow/:userIdToFollow", isLogedin, followUser);
 module.exports = router;

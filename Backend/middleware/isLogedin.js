@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const user = require("../models/users/user.js");
 const isLogedin = (req, res, next) => {
-  console.log("isLogedin middleware called");
+  // console.log("isLogedin middleware called");
   //fetch token from header
   const tocken = req.headers.authorization?.split(" ")[1];
   // console.log("token", tocken);

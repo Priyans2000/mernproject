@@ -146,7 +146,7 @@ const unblockUser = asyncHandler(async (req, res, next) => {
   }
 
   //remove user from blockuser array
-  
+
   currentUser.blockuser = currentUser.blockuser.filter((id) => {
     return id.toString() !== useridTOUnblock;
   });
@@ -156,7 +156,73 @@ const unblockUser = asyncHandler(async (req, res, next) => {
 
   res.json({ status: "success", message: "User unblocked successfully" });
 });
-
+//========================================================
+// view user profile by id
+//get/api/v1/users/view-profile/:userProfileid
+//access private/admin
+const viewuaserProfile = asyncHandler(async (req, res, next) => {
+  const userprofileId = req.params.userprofileId;
+  const userprofile = await usermodel.findById(userprofileId);
+  if (!userprofile) {
+    let error = new Error("User profile not found");
+    next(error);
+    return;
+  }
+  const currnentUserId = req?.user?._id;
+  //
+  if (userprofile.proflieviews.includes(currnentUserId)) {
+    let error = new Error("User profile already viewed");
+    next(error);
+    return;
+  }
+  //push current user id to profileviews array
+  userprofile.proflieviews.push(currnentUserId);
+  await userprofile.save();
+  res.json({
+    status: "success",
+    message: "User profile viewed successfully",
+    userprofile,
+  });
+});
+//========================================================
+// follow user
+// route put/api/v1/users/follow/:userid
+// access private
+const followUser = asyncHandler(async (req, res, next) => {
+  //get current login user id
+  const currentUserId = req?.user?._id;
+  //get user id to follow
+  const userIdToFollow = req.params.userIdToFollow;
+  const userprofile = await usermodel.findById(userIdToFollow);
+  if (!userprofile) {
+    let error = new Error("User not found");
+    next(error);
+    return;
+  }
+  //check self follow
+  if (currentUserId.toString() === userIdToFollow.toString()) {
+    let error = new Error("You cannot follow yourself");
+    next(error);
+    return;
+  }
+  //push current user id to followers array of user to follow
+  await usermodel.findByIdAndUpdate(
+    currentUserId,
+    {
+      $addToSet: { following: userIdToFollow },
+    },
+    { new: true }
+  );
+  //push user to follow to followers array of current user
+  await usermodel.findByIdAndUpdate(
+    userIdToFollow,
+    {
+      $addToSet: { followers: currentUserId },
+    },
+    { new: true }
+  );
+  res.json({ status: "success", message: "User followed successfully" });
+});
 //============================
 module.exports = {
   registerUser,
@@ -164,4 +230,6 @@ module.exports = {
   pview,
   blockUser,
   unblockUser,
+  viewuaserProfile,
+  followUser,
 };
