@@ -66,11 +66,11 @@ const deleteCategary = asyncHandler(async (req, res) => {
 
 const updateCategary = asyncHandler(async (req, res) => {
   const catid = req.params.id;
-  const name  = req.body.name;
+  const name = req.body.name;
   const updatecat = await categary.findByIdAndUpdate(
     catid,
     { name: name },
-    { new: true , runValidators: true}
+    { new: true, runValidators: true }
   );
   if (!updatecat) {
     res.status(404);

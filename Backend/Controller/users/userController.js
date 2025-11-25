@@ -1,5 +1,6 @@
 //reg new ueser
 const usermodel = require("../../models/users/user.js");
+const sendMail = require("../../config/sendEmail.js");
 const tocken = require("../../config/tocken.js");
 const asyncHandler = require("express-async-handler"); //for handling async errors in express
 const bcrypt = require("bcryptjs");
@@ -223,6 +224,76 @@ const followUser = asyncHandler(async (req, res, next) => {
   );
   res.json({ status: "success", message: "User followed successfully" });
 });
+//===========================================
+// unfollow user
+// route put/api/v1/users/unfollow/:userid
+// access private
+const unfollowUser = asyncHandler(async (req, res, next) => {
+  //get current login user id
+  const currentUserId = req?.user?._id;
+  //find the user to follow
+  const userIdToUnfollow = req.params.userIdToUnfollow;
+  //check self unfollow
+  if (currentUserId.toString() === userIdToUnfollow.toString()) {
+    let error = new Error("You cannot unfollow yourself");
+    next(error);
+    return;
+  }
+  //check if user to unfollow exists
+  const userProfile = await usermodel.findById(userIdToUnfollow);
+  if (!userProfile) {
+    let error = new Error("User not found");
+    next(error);
+    return;
+  }
+  //check if already not following
+  const currentUser = await usermodel.findById(currentUserId);
+  if (!currentUser.following.includes(userIdToUnfollow)) {
+    let error = new Error("You are not following this user");
+    next(error);
+    return;
+  }
+  //remove userIdToUnfollow from following array of current user
+  await usermodel.findByIdAndUpdate(
+    currentUserId,
+    {
+      $pull: { following: userIdToUnfollow },
+    },
+    { new: true }
+  );
+  //remove currentUserId from followers array of userIdToUnfollow
+  await usermodel.findByIdAndUpdate(
+    userIdToUnfollow,
+    {
+      $pull: { followers: currentUserId },
+    },
+    { new: true }
+  );
+  res.json({
+    status: "success",
+    message: "User unfollowed successfully",
+  });
+});
+//=========================================
+//forget password
+//route post/api/v1/users/forget-password
+//access public
+const forgotpassword = asyncHandler(async(req,res,next)=>{  
+  const {email}= req.body;
+  //check if user exists in db
+  const userFound = await usermodel.findOne({email});
+  if(!userFound){  
+    let error = new Error("User not found");
+    next(error);
+    return; 
+  }
+  //get the reset tocken from user model method
+const passwordresettockencode = await  userFound.generateVerificationToken();  
+await userFound.save(); //save the user with reset tocken
+sendMail(email,passwordresettockencode);
+
+res.json({status:"success", message:"Password reset tocken sent to email"});
+})
 //============================
 module.exports = {
   registerUser,
@@ -232,4 +303,6 @@ module.exports = {
   unblockUser,
   viewuaserProfile,
   followUser,
+  unfollowUser,
+  forgotpassword,
 };

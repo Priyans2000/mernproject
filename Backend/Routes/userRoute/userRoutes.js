@@ -7,6 +7,8 @@ const {
   unblockUser,
   viewuaserProfile,
   followUser,
+  unfollowUser,
+  forgotpassword,
 } = require("../../Controller/users/userController.js");
 const isLogedin = require("../../middleware/isLogedin.js");
 
@@ -26,5 +28,10 @@ router.put("/unblock/:useridTOUnblock", isLogedin, unblockUser);
 //view user profile
 router.get("/view-profile/:userprofileId", isLogedin, viewuaserProfile);
 //follow user
-router.put("/follow/:userIdToFollow", isLogedin, followUser);
+router.put("/follow-user/:userIdToFollow", isLogedin, followUser);
+//unfollow user
+router.put("/unfollow-user/:userIdToUnfollow", isLogedin, unfollowUser);
+//forgot password
+router.post("/forgot-password", forgotpassword);
+
 module.exports = router;

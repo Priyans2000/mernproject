@@ -9,10 +9,13 @@ const userRoutes = require("./Routes/userRoute/userRoutes");
 const create = require("./Routes/categaryRoutes/createcategaryRoutes.js");
 const post = require("./Routes/postRoutes/postRouter.js");
 const comments = require("./Routes/commentRouter/commentRoutes.js");
+//===================================
+const sendMail = require("./config/sendEmail.js");
 //============================
 const connectdb = require("./config/db");
-//====================================
+//=========================
 //create express app
+// sendMail("monikaagrawal7129@gmail.com","helloworld");
 const app = express();
 //load env variables
 dotenv.config();
@@ -28,7 +31,7 @@ app.use("/api/v1/categories", create);
 //========================
 app.use("/api/v1/posts", post);
 //========================
-app.use("/api/v1/comments",comments);
+app.use("/api/v1/comments", comments);
 //========================
 //404 error handler/page not found
 app.use(notfound);
