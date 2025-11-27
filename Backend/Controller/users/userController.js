@@ -343,7 +343,10 @@ const resetPassword = asyncHandler(async (req, res) => {
     message: "Password reset successfully",
   });
 });
-=======
+//===============================================
+//forgot password
+//route post/api/v1/users/forget-password
+//access public
 const forgotPassword = asyncHandler(async (req, res, next) => {
   //get email
   const { email } = req.body;
@@ -365,7 +368,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 //reset password
 //route post/api/v1/users/reset-password/:resetToken
 //access public
->>>>>>> Stashed changes
+
 
 //============================
 module.exports = {
@@ -377,10 +380,7 @@ module.exports = {
   viewuaserProfile,
   followUser,
   unfollowUser,
-<<<<<<< Updated upstream
-  forgotpassword,
-  resetPassword,
-=======
   forgotPassword,
->>>>>>> Stashed changes
+  
+
 };
