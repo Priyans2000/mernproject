@@ -100,7 +100,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    passwordexpiredtockendate: {
+    passwordexpiredtockentime: {
       type: Date,
     },
     accountverificationtoken: {

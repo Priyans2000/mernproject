@@ -4,6 +4,7 @@ const sendMail = require("../../config/sendEmail.js");
 const tocken = require("../../config/tocken.js");
 const asyncHandler = require("express-async-handler"); //for handling async errors in express
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 //register new user
 const registerUser = asyncHandler(async (req, res, next) => {
@@ -278,22 +279,70 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
 //forget password
 //route post/api/v1/users/forget-password
 //access public
-const forgotpassword = asyncHandler(async(req,res,next)=>{  
-  const {email}= req.body;
+const forgotpassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
   //check if user exists in db
-  const userFound = await usermodel.findOne({email});
-  if(!userFound){  
+  const userFound = await usermodel.findOne({ email });
+  if (!userFound) {
     let error = new Error("User not found");
     next(error);
-    return; 
+    return;
   }
   //get the reset tocken from user model method
-const passwordresettockencode = await  userFound.generateVerificationToken();  
-await userFound.save(); //save the user with reset tocken
-sendMail(email,passwordresettockencode);
+  const passwordresettockencode = await userFound.generateVerificationToken();
+  await userFound.save(); //save the user with reset tocken
+  sendMail(email, passwordresettockencode);
 
-res.json({status:"success", message:"Password reset tocken sent to email"});
-})
+  res.json({
+    status: "success",
+    message: "Password reset tocken sent to email",
+  });
+});
+//============================
+//reset password
+//route put/api/v1/users/reset-password/:resettocken
+//access public
+const resetPassword = asyncHandler(async (req, res) => {
+  //get reset tocken from params
+  const { resetTocken } = req.params;
+  //get the password from body
+  const { password } = req.body;
+  //hash the reset tocken
+  const hashedTocken = crypto
+    .createHash("sha256")
+    .update(resetTocken)
+    .digest("hex");
+
+  //find user by tocken and tocken expiry time
+  const user = await usermodel.findOne({
+    passwordresettockencode: hashedTocken,
+    passwordexpiredtockentime: { $gt: Date.now() },
+  });
+  if(!user){
+    let error = new Error("Invalid or expired password reset token");
+    next(error);
+    return;
+  }
+  //hash the password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  //update user password
+  user.password = hashedPassword;
+  user.passwordresettockencode = undefined;
+  user.passwordexpiredtockentime = undefined;
+  await user.save();
+  //send response
+  if (!user) {
+    let error = new Error("User not found");
+    next(error);
+    return;
+  }
+  res.json({
+    status: "success",
+    message: "Password reset successfully",
+  });
+});
+
 //============================
 module.exports = {
   registerUser,
@@ -305,4 +354,5 @@ module.exports = {
   followUser,
   unfollowUser,
   forgotpassword,
+  resetPassword,
 };
