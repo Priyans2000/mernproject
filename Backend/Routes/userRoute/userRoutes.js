@@ -8,7 +8,9 @@ const {
   viewuaserProfile,
   followUser,
   unfollowUser,
-  forgotpassword,
+  forgotPassword,
+
+  resetPassword,
 } = require("../../Controller/users/userController.js");
 const isLogedin = require("../../middleware/isLogedin.js");
 
@@ -20,7 +22,6 @@ router.post("/register", registerUser);
 router.post("/login", login);
 //profile view
 router.get("/profile", isLogedin, pview);
-
 // block user
 router.put("/block/:useridtoBlock", isLogedin, blockUser);
 // unblock user
@@ -31,7 +32,7 @@ router.get("/view-profile/:userprofileId", isLogedin, viewuaserProfile);
 router.put("/follow-user/:userIdToFollow", isLogedin, followUser);
 //unfollow user
 router.put("/unfollow-user/:userIdToUnfollow", isLogedin, unfollowUser);
-//forgot password
-router.post("/forgot-password", forgotpassword);
 
+//forgot password
+router.post("/forget-password", forgotPassword);
 module.exports = router;

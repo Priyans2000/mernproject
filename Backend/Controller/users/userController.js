@@ -55,7 +55,7 @@ const login = asyncHandler(async (req, res, next) => {
   user.lastlogin = Date.now();
   await user.save();
   //===========================================
-  const { password: userpassword, ...safeuser } = user.toObject(); //remove password from user object
+  // const { password: userpassword, ...safeuser } = user.toObject(); //remove password from user object
   //===========================================
   //send response to client
   res.json({
@@ -66,7 +66,7 @@ const login = asyncHandler(async (req, res, next) => {
     role: user?.role,
     token: tocken(user),
     message: "User logged in successfully",
-    user: safeuser,
+    // user: safeuser,
   });
   // } catch (error) {
   //   next(error);
@@ -279,6 +279,7 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
 //forget password
 //route post/api/v1/users/forget-password
 //access public
+
 const forgotpassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
   //check if user exists in db
@@ -342,6 +343,29 @@ const resetPassword = asyncHandler(async (req, res) => {
     message: "Password reset successfully",
   });
 });
+=======
+const forgotPassword = asyncHandler(async (req, res, next) => {
+  //get email
+  const { email } = req.body;
+  //check if user exists
+  const user = await usermodel.findOne({ email });
+  if (!user) {
+    return next(new Error("User with this email does not exist"));
+  }
+  //generate password reset token
+  const resetToken = await user.generatePasswordResetToken();
+  await user.save();
+  sendMail(email, resetToken);
+  res.json({
+    status: "success",
+    message: "Password reset email sent to your email address",
+  });
+});
+//===============================================
+//reset password
+//route post/api/v1/users/reset-password/:resetToken
+//access public
+>>>>>>> Stashed changes
 
 //============================
 module.exports = {
@@ -353,6 +377,10 @@ module.exports = {
   viewuaserProfile,
   followUser,
   unfollowUser,
+<<<<<<< Updated upstream
   forgotpassword,
   resetPassword,
+=======
+  forgotPassword,
+>>>>>>> Stashed changes
 };

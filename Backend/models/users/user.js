@@ -96,11 +96,15 @@ const userSchema = new mongoose.Schema(
         ref: "Post",
       },
     ],
-    passwordresettockencode: {
+    passwordResetToken: {
       type: String,
       default: "",
     },
+<<<<<<< Updated upstream
     passwordexpiredtockentime: {
+=======
+    passwordResetExpires: {
+>>>>>>> Stashed changes
       type: Date,
     },
     accountverificationtoken: {
@@ -117,37 +121,17 @@ const userSchema = new mongoose.Schema(
     timestamped: true,
   }
 );
-// userSchema.methods.generateVerificationToken = function () {
-//   // Generate a  token
-//   const verificationToken = crypto.randomBytes(20).toString("hex");
-//   this.restetTocken = crypto
-//     .createHash("sha256")
-//     .update(verificationToken)
-//     .digest("hex");
-//   console.log("Generated Verification Token:", verificationToken);
-//   console.log("Hashed Verification Token:", restetTocken);
-//   //set the expairy time for token 10 minutes
-//   this.passwordexpiredtockendate = Date.now() + 10 * 60 * 1000; //10 minutes
-//   return verificationToken;
-// };
 
-
-userSchema.methods.generateVerificationToken = function () {
-  // Generate a token
-  const verificationToken = crypto.randomBytes(20).toString("hex");
-
-  // Hash the token
-  this.passwordresettockencode= crypto
+userSchema.methods.generatePasswordResetToken=function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.passwordResetToken = crypto
     .createHash("sha256")
-    .update(verificationToken)   // ✅ correct variable
+    .update(resetToken)
     .digest("hex");
+    //set token expire time 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minutes
+  return resetToken;
+}
 
-  console.log("Generated Verification Token:", verificationToken);
-  console.log("Hashed Verification Token:", this.passwordresettockencode);
 
-  // Set expiry time: 10 minutes
-  this.passwordexpiredtockendate = Date.now() + 10 * 60 * 1000;
-
-  return verificationToken;
-};
 module.exports = mongoose.model("User", userSchema);
