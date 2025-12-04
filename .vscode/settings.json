@@ -1,4 +1,5 @@
 {
     "git.ignoreLimitWarning": true,
-    "DockerRun.DisableAutoGenerateConfig": true
+    "DockerRun.DisableAutoGenerateConfig": true,
+    "accessibility.debugWatchVariableAnnouncements": true
 }

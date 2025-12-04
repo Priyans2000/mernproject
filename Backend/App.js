@@ -10,12 +10,13 @@ const create = require("./Routes/categaryRoutes/createcategaryRoutes.js");
 const post = require("./Routes/postRoutes/postRouter.js");
 const comments = require("./Routes/commentRouter/commentRoutes.js");
 //===================================
-const sendMail = require("./config/sendEmail.js");
+// const sendMail = require("./config/sendEmail.js");
 //============================
 const connectdb = require("./config/db");
 //=========================
-//create express app
 // sendMail("monikaagrawal7129@gmail.com","helloworld");
+//=========================
+//create express app
 const app = express();
 //load env variables
 dotenv.config();

@@ -6,6 +6,8 @@ const asyncHandler = require("express-async-handler"); //for handling async erro
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
+const sendVerificitionMail = require("../../config/accountVerificitionEmail.js");
+//=========================================
 //register new user
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -33,10 +35,9 @@ const registerUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-//===========================================================================
+//=======================================
 // login new user and generate jwt token
 //post/api/v1/users/login
-
 const login = asyncHandler(async (req, res, next) => {
   // try {
   const { name, password } = req.body;
@@ -73,7 +74,7 @@ const login = asyncHandler(async (req, res, next) => {
   // }
 });
 
-//==============================================================
+//=========================================
 //profile view
 //get/api/v1/users/profile
 //access private
@@ -86,11 +87,10 @@ const pview = asyncHandler(async (req, res, next) => {
   //   next(error);
   // }
 });
-//============================================================
+//============================================
 //block user
 //access private/admin
 //route put/api/v1/users/block/:userid
-
 const blockUser = asyncHandler(async (req, res, next) => {
   //find user by id and update status to blocked
   const useridtoBlock = req.params.useridtoBlock;
@@ -103,7 +103,6 @@ const blockUser = asyncHandler(async (req, res, next) => {
   }
   // get the current user id
   const loginuserid = req?.user?.id;
-
   //check self user blocking
   //use loadash lib ys fir tostring
   if (useridtoBlock.toString() === loginuserid.toString()) {
@@ -128,7 +127,6 @@ const blockUser = asyncHandler(async (req, res, next) => {
 // unblock user
 //access private/admin
 //route put/api/v1/users/unblock/:userid
-
 const unblockUser = asyncHandler(async (req, res, next) => {
   const useridTOUnblock = req.params.useridTOUnblock;
   const usertoUnblock = await usermodel.findById(useridTOUnblock);
@@ -158,7 +156,7 @@ const unblockUser = asyncHandler(async (req, res, next) => {
 
   res.json({ status: "success", message: "User unblocked successfully" });
 });
-//========================================================
+//====================================================
 // view user profile by id
 //get/api/v1/users/view-profile/:userProfileid
 //access private/admin
@@ -186,7 +184,7 @@ const viewuaserProfile = asyncHandler(async (req, res, next) => {
     userprofile,
   });
 });
-//========================================================
+//=====================================================
 // follow user
 // route put/api/v1/users/follow/:userid
 // access private
@@ -276,74 +274,6 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
   });
 });
 //=========================================
-//forget password
-//route post/api/v1/users/forget-password
-//access public
-
-const forgotpassword = asyncHandler(async (req, res, next) => {
-  const { email } = req.body;
-  //check if user exists in db
-  const userFound = await usermodel.findOne({ email });
-  if (!userFound) {
-    let error = new Error("User not found");
-    next(error);
-    return;
-  }
-  //get the reset tocken from user model method
-  const passwordresettockencode = await userFound.generateVerificationToken();
-  await userFound.save(); //save the user with reset tocken
-  sendMail(email, passwordresettockencode);
-
-  res.json({
-    status: "success",
-    message: "Password reset tocken sent to email",
-  });
-});
-//============================
-//reset password
-//route put/api/v1/users/reset-password/:resettocken
-//access public
-const resetPassword = asyncHandler(async (req, res) => {
-  //get reset tocken from params
-  const { resetTocken } = req.params;
-  //get the password from body
-  const { password } = req.body;
-  //hash the reset tocken
-  const hashedTocken = crypto
-    .createHash("sha256")
-    .update(resetTocken)
-    .digest("hex");
-
-  //find user by tocken and tocken expiry time
-  const user = await usermodel.findOne({
-    passwordresettockencode: hashedTocken,
-    passwordexpiredtockentime: { $gt: Date.now() },
-  });
-  if(!user){
-    let error = new Error("Invalid or expired password reset token");
-    next(error);
-    return;
-  }
-  //hash the password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  //update user password
-  user.password = hashedPassword;
-  user.passwordresettockencode = undefined;
-  user.passwordexpiredtockentime = undefined;
-  await user.save();
-  //send response
-  if (!user) {
-    let error = new Error("User not found");
-    next(error);
-    return;
-  }
-  res.json({
-    status: "success",
-    message: "Password reset successfully",
-  });
-});
-//===============================================
 //forgot password
 //route post/api/v1/users/forget-password
 //access public
@@ -368,8 +298,87 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 //reset password
 //route post/api/v1/users/reset-password/:resetToken
 //access public
-
-
+const resetPassword = asyncHandler(async (req, res, next) => {
+  //get the tocken from params
+  const resetToken = req.params.resetToken;
+  const { password } = req.body;
+  //hash the tocken
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  //find the tocken with the db
+  const user = await usermodel.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  // if user not found
+  if (!user) {
+    return next(new Error("Invalid or expired password reset token"));
+  }
+  //update the new password
+  const salt = await bcrypt.genSalt(8);
+  user.password = await bcrypt.hash(password, salt);
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  res.json({
+    status: "success",
+    message: "Password reset successfully",
+  });
+});
+//============================================
+//accont verification email
+//route post/api/v1/users/verification-email
+//access private
+const verifymail = asyncHandler(async (req, res, next) => {
+  //get current user
+  const currentUserId = req?.user?._id;
+  // const currentUserId = await usermodel.findById(req.user.id);
+  //check if user exists
+  const user = await usermodel.findById(currentUserId);
+  if (!user) {
+    return next(new Error("User not found"));
+  }
+  //get the tocken from current user object
+  const verifyToken = await user.generateaccountVerificationToken();
+  await user.save();
+  sendVerificitionMail(user.email, verifyToken);
+  res.json({
+    status: "success",
+    message: "Account verification email sent to your email address",
+  });
+});
+//============================================
+// verify account
+//route put/api/v1/users/verify-account/:verifyToken
+//access private
+const verifyAccount = asyncHandler(async (req, res, next) => {
+  const { verifyTocken } = req.params;
+  //hash the tocken
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(verifyTocken)
+    .digest("hex");
+  //find the tocken with the db
+  const user = await usermodel.findOne({
+    accountverificationtoken: hashedToken,
+    accountverificationtokenexpire: { $gt: Date.now() },
+  });
+  // if user not found
+  if (!user) {
+    return next(new Error("Invalid or expired account verification token"));
+  }
+  //update the new password
+  user.isverified = true;
+  user.accountverificationtoken = undefined;
+  user.accountverificationtokenexpire = undefined;
+  await user.save();
+  res.json({
+    status: "success",
+    message: "Account verified successfully",
+  });
+});
 //============================
 module.exports = {
   registerUser,
@@ -381,6 +390,7 @@ module.exports = {
   followUser,
   unfollowUser,
   forgotPassword,
-  
-
+  resetPassword,
+  verifymail,
+  verifyAccount,
 };
