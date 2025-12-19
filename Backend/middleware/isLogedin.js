@@ -23,7 +23,7 @@ const isLogedin = (req, res, next) => {
       const userid = decoded?.user?.id;
       const userData = await user
         .findById(userid)
-        .select("name ,email ,role , _id");
+        .select("name ,email ,role , _id ,isverified");
       // console.log("user", userData);//fetch user data from database
       req.user = userData; //attach user data to request object for further use
       next();

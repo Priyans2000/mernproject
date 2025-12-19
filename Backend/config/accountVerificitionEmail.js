@@ -28,7 +28,7 @@ const sendVerificitionMail = async (to, accountVerificationToken) => {
       to,
       subject: "Account Verification Email",
       html: `
-                <h1>Reset Password</h1>
+                <h1>Account Verification</h1>
                 You are receiving this email because you has requested to verify your account.
                 Please click on the link below, or paste it into your browser to complete the process:<br><br>
                 https://localhost:5000/Account-Verification-Email/${accountVerificationToken}<br><br>

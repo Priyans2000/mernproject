@@ -21,14 +21,12 @@ const createPost = asyncHAndler(async (req, res, next) => {
     return;
   }
   //create new post object
-
   const newpost = await post.create({
     tittle: tittle,
     content: content,
     author: req.user._id,
     category: categoryId,
   });
-
   // upadate user by adding post in it
   const updateuser = await user.findByIdAndUpdate(
     req?.user?._id,
@@ -138,6 +136,111 @@ const updatePost = asyncHAndler(async (req, res) => {
     });
   }
 });
+//=================================================
+// like post by id
+//route put/api/v1/posts/like/:id
+//access private component
+// const likePost = asyncHAndler(async (req, res) => {
+//   const postId = req.params.id;
+//   const userId = req.user._id;
+
+//   const post = await post.findById(postId);
+//   if (!post) {
+//     return next(new Error("Post not found"));
+//   }
+//   //add the current user id to like array
+//   await post.findByIdAndUpdate(postId, { $addToSet: { likes: userId } }, { new: true });
+// remove user id from dislike array if present
+
+//   post.dislike = post.dislike.filter((id) => id.toString() !== userId.toString());
+// })
+// //resave post
+// await post.Save()
+// res.json({
+//   status: "success",
+//   message: "Post updated successfully",
+// });
+
+const likePost = asyncHAndler(async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user._id;
+
+  const foundPost = await post.findById(postId);
+  if (!foundPost) {
+    res.status(404);
+    throw new Error("Post not found");
+  }
+
+  const updatedPost = await post.findByIdAndUpdate(
+    postId,
+    {
+      $addToSet: { likes: userId },
+      $pull: { dislikes: userId },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Post liked successfully",
+    post: updatedPost,
+  });
+});
+//=================================================
+// post dislike by id
+//route put/api/v1/posts/dislike/:id
+//access private component
+const dislikePost = asyncHAndler(async (req, res) => {
+  const postId = req.params.id; // ✅ MATCH ROUTE
+  const userId = req.user._id;
+
+  const foundPost = await post.findById(postId);
+  if (!foundPost) {
+    res.status(404);
+    throw new Error("Post not found");
+  }
+
+  const updatedPost = await post.findByIdAndUpdate(
+    postId,
+    {
+      $addToSet: { dislikes: userId },
+      $pull: { likes: userId },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Post disliked successfully",
+    post: updatedPost,
+  });
+});
+//============================================
+//post clap by id
+//route put/api/v1/posts/clap/:id
+//access private component
+const clapPost = asyncHAndler(async (req, res) => {
+  const postId = req.params.id;
+
+  const foundPost = await post.findById(postId);
+  if (!foundPost) {
+    res.status(404);
+    throw new Error("Post not found");
+  }
+
+  const updatedPost = await post.findByIdAndUpdate(
+    postId,
+    { $inc: { clap: 1 } },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Post clapped successfully",
+    post: updatedPost,
+  });
+});
+//============================================
 
 module.exports = {
   createPost,
@@ -145,4 +248,7 @@ module.exports = {
   getsinglePost,
   deletePost,
   updatePost,
+  likePost,
+  dislikePost,
+  clapPost,
 };

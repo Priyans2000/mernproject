@@ -1,5 +1,8 @@
 {
     "git.ignoreLimitWarning": true,
     "DockerRun.DisableAutoGenerateConfig": true,
-    "accessibility.debugWatchVariableAnnouncements": true
+    "accessibility.debugWatchVariableAnnouncements": true,
+    "cSpell.words": [
+        "accountverificationtokenexpire"
+    ]
 }
