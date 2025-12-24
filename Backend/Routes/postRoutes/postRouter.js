@@ -8,6 +8,7 @@ const {
   likePost,
   dislikePost,
   clapPost,
+  schedulePost
 } = require("../../Controller/post/postController.js");
 
 const isLoggedIn = require("../../middleware/isLogedin.js");
@@ -40,6 +41,9 @@ postrouter.put("/:id", isLoggedIn, updatePost);
 //clap post router
 postrouter.put("/clap/:id", isLoggedIn, clapPost);
 
+//schedule post route
+postrouter.put("/schedule/:id", isLoggedIn, schedulePost);
+//==============================================================================================
 
 
 //exporting post router

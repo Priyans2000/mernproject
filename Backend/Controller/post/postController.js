@@ -241,6 +241,50 @@ const clapPost = asyncHAndler(async (req, res) => {
   });
 });
 //============================================
+//schedule post
+//route put/api/v1/post/schedule/:id
+// access private
+const schedulePost = asyncHAndler(async (req, res, next) => {
+  const postId = req.params.id;
+  const { scheduledpost } = req.body;
+
+  if (!scheduledpost || !postId) {
+    return next(new Error("Post not found"));
+  }
+
+  // find post
+  const foundPost = await post.findById(postId);
+  if (!foundPost) {
+    return next(new Error("Post not found"));
+  }
+
+  // author check
+  if (foundPost.author.toString() !== req.user._id.toString()) {
+    return next(new Error("You are not authorized to schedule this post"));
+  }
+
+  // date check
+  const schedualedDate = new Date(scheduledpost);
+  if (schedualedDate <= new Date()) {
+    return next(new Error("Scheduled date must be in the future"));
+  }
+  // schedule post in db
+  await post.findByIdAndUpdate(
+    postId,
+    {
+      scheduledpost: schedualedDate,
+      $unset: { category: "" }, // remove category association
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Post scheduled successfully",
+  });
+});
+
+//============================================
 
 module.exports = {
   createPost,
@@ -251,4 +295,5 @@ module.exports = {
   likePost,
   dislikePost,
   clapPost,
+  schedulePost,
 };
