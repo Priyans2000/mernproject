@@ -7,7 +7,7 @@ const postSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "",
+      required: true,
     },
     clap: {
       type: Number,
@@ -61,7 +61,7 @@ const postSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-module.exports = mongoose.model("post", postSchema);
+module.exports = mongoose.model("Post", postSchema);

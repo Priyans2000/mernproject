@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="296c0d5e-461f-4183-9bd4-4c262ff7317f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Backend/Controller/categories/catecontrollers.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Controller/categories/catecontrollers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Controller/post/postController.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Controller/post/postController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Controller/users/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Controller/users/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/Routes/postRoutes/postRouter.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/Routes/postRoutes/postRouter.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/models/Categoires/Category.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/models/Categoires/Category.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/models/post/Post.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/models/post/Post.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/models/users/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/models/users/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Backend/package.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="38pFTicnJgSLxtmsiACiPOcZRhW" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Ram"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="296c0d5e-461f-4183-9bd4-4c262ff7317f" name="Changes" comment="" />
+      <created>1769488619861</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1769488619861</updated>
+    </task>
+    <servers />
+  </component>
+</project>

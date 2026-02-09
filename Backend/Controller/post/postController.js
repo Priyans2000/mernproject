@@ -26,19 +26,20 @@ const createPost = asyncHAndler(async (req, res, next) => {
     content: content,
     author: req.user._id,
     category: categoryId,
+    image: req.file.path,
   });
   // upadate user by adding post in it
   const updateuser = await user.findByIdAndUpdate(
     req?.user?._id,
     { $push: { posts: newpost._id } },
-    { new: true }
+    { new: true },
   );
 
   // upadate category by adding post in it
   const updatecategory = await categary.findByIdAndUpdate(
     categoryId,
     { $push: { posts: newpost._id } },
-    { new: true }
+    { new: true },
   );
 
   //send response to client
@@ -49,6 +50,12 @@ const createPost = asyncHAndler(async (req, res, next) => {
     user: updateuser,
     category: updatecategory,
   });
+  // console.log("File received:", req.file);
+  res.json({
+    status: "success",
+    message: "File uploaded successfully",
+    file: req.file,
+  });
 });
 
 //================================================
@@ -56,8 +63,26 @@ const createPost = asyncHAndler(async (req, res, next) => {
 //route get/api/v1/allposts
 //access public component
 const getallpost = asyncHAndler(async (req, res) => {
-  const allpost = await post.find({}).populate("author").populate("category");
+  // const allpost = await post.find({}).populate("author").populate("category");
+  const currentUserId = req.user._id;
+  // get all users those blocked current user
+  const userBlockCurrentUser = await user.find({
+    blockuser: currentUserId,
+  });
+  //extract the id of the user who have blocked current user
+  const blockUserIds = userBlockCurrentUser.map((userObj) => userObj._id);
+  const query = {
+    author: { $nin: blockUserIds },
+    $or: [{ scheduledpost: { $lte: new Date() }, schedulePost: null }],
+  };
+  // fetch those post whose author is not blocking blockUserIds
+  const allpost = await post.find(query).populate({
+    path: "author",
+    model: "User",
+    select: "email name role isblocked isverified ",
+  });
   //send response to client
+
   res.json({
     status: "success",
     message: "all posts fetched successfully",
@@ -140,26 +165,6 @@ const updatePost = asyncHAndler(async (req, res) => {
 // like post by id
 //route put/api/v1/posts/like/:id
 //access private component
-// const likePost = asyncHAndler(async (req, res) => {
-//   const postId = req.params.id;
-//   const userId = req.user._id;
-
-//   const post = await post.findById(postId);
-//   if (!post) {
-//     return next(new Error("Post not found"));
-//   }
-//   //add the current user id to like array
-//   await post.findByIdAndUpdate(postId, { $addToSet: { likes: userId } }, { new: true });
-// remove user id from dislike array if present
-
-//   post.dislike = post.dislike.filter((id) => id.toString() !== userId.toString());
-// })
-// //resave post
-// await post.Save()
-// res.json({
-//   status: "success",
-//   message: "Post updated successfully",
-// });
 
 const likePost = asyncHAndler(async (req, res) => {
   const postId = req.params.id;
@@ -177,7 +182,7 @@ const likePost = asyncHAndler(async (req, res) => {
       $addToSet: { likes: userId },
       $pull: { dislikes: userId },
     },
-    { new: true }
+    { new: true },
   );
 
   res.status(200).json({
@@ -206,7 +211,7 @@ const dislikePost = asyncHAndler(async (req, res) => {
       $addToSet: { dislikes: userId },
       $pull: { likes: userId },
     },
-    { new: true }
+    { new: true },
   );
 
   res.status(200).json({
@@ -231,7 +236,7 @@ const clapPost = asyncHAndler(async (req, res) => {
   const updatedPost = await post.findByIdAndUpdate(
     postId,
     { $inc: { clap: 1 } },
-    { new: true }
+    { new: true },
   );
 
   res.status(200).json({
@@ -268,6 +273,7 @@ const schedulePost = asyncHAndler(async (req, res, next) => {
   if (schedualedDate <= new Date()) {
     return next(new Error("Scheduled date must be in the future"));
   }
+
   // schedule post in db
   await post.findByIdAndUpdate(
     postId,
@@ -275,7 +281,7 @@ const schedulePost = asyncHAndler(async (req, res, next) => {
       scheduledpost: schedualedDate,
       $unset: { category: "" }, // remove category association
     },
-    { new: true }
+    { new: true },
   );
 
   res.status(200).json({

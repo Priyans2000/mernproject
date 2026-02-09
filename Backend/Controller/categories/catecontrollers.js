@@ -33,7 +33,11 @@ const Categories = asyncHandler(async (req, res, next) => {
 //route get/api/v1/allcategories
 //access public component
 const getallCategories = asyncHandler(async (req, res) => {
-  const allCategaries = await categary.find({});
+  const allCategaries = await categary.find({}).populate({
+    path : "posts",
+    model :"post",
+   
+  });
   res.status(200).json({
     status: "success",
     message: "All categories fetched successfully",

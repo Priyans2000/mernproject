@@ -14,11 +14,13 @@ const {
   verifyAccount,
 } = require("../../Controller/users/userController.js");
 const isLogedin = require("../../middleware/isLogedin.js");
-
+const { storage } = require("../../config/fileUplode.js");
+const multer = require("multer");
 const router = express.Router();
+const upload = multer({ storage });
 
 //reg new ueser
-router.post("/register", registerUser);
+router.post("/register", upload.single("profilepic"), registerUser);
 //====================================
 // login new user
 router.post("/login", login);
@@ -51,11 +53,7 @@ router.put("/reset-password/:resetToken", resetPassword);
 router.put("/verification-email", isLogedin, verifymail);
 //====================================
 //account tocken verification
-router.put(
-  "/account-verification/:verifyTocken",
-  isLogedin,
-  verifyAccount
-);
+router.put("/account-verification/:verifyTocken", isLogedin, verifyAccount);
 //====================================
 
 module.exports = router;

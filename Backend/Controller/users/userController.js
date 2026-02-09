@@ -17,7 +17,8 @@ const registerUser = asyncHandler(async (req, res, next) => {
     // return res.status(400).json({ message: "User already exists" });
     throw new Error("User already exists");
   }
-  const newuser = new usermodel({ name, email, password });
+  const newuser = new usermodel({ name, email, password, profilepic : req.file.path, });
+   
   //hash password before saving to db
   const salt = await bcrypt.genSalt(8);
   newuser.password = await bcrypt.hash(password, salt);
@@ -30,8 +31,15 @@ const registerUser = asyncHandler(async (req, res, next) => {
     _id: newuser?._id, //optional chaining
     name: newuser?.name,
     email: newuser?.email,
-    password: newuser?.password,
+    password: newuser?.password,//never send
     role: newuser?.role,
+    profilepic: newuser?.profilepic,
+  });
+
+  res.json({
+    status: "success",
+    message: "File uploaded successfully",
+    file: req.file,
   });
 });
 
@@ -56,7 +64,7 @@ const login = asyncHandler(async (req, res, next) => {
   user.lastlogin = Date.now();
   await user.save();
   //===========================================
-  // const { password: userpassword, ...safeuser } = user.toObject(); //remove password from user object
+  const { password: userpassword, ...safeuser } = user.toObject(); //remove password from user object
   //===========================================
   //send response to client
   res.json({
@@ -81,7 +89,25 @@ const login = asyncHandler(async (req, res, next) => {
 const pview = asyncHandler(async (req, res, next) => {
   // console.log("user",req.user);fetch user data from request object
   // try{
-  const userData = await usermodel.findById(req.user.id);
+  const userData = await usermodel
+    .findById(req.user.id)
+    .select("-password")
+    .populate([
+      { path: "posts", modle: "post" },
+      { path: "followers", modle: "user" },
+      { path: "following", modle: "user" },
+      { path: "blockuser", modle: "user" },
+      { path: "blockuser", modle: "user" },
+      { path: "proflieviews", modle: "user" },
+    ]);
+
+  if (!userData) {
+    return res.status(404).json({
+      status: "fail",
+      message: "User not found",
+    });
+  }
+
   res.json({ status: "success", message: "Profile view success", userData });
   // }catch(error){
   //   next(error);
@@ -211,7 +237,7 @@ const followUser = asyncHandler(async (req, res, next) => {
     {
       $addToSet: { following: userIdToFollow },
     },
-    { new: true }
+    { new: true },
   );
   //push user to follow to followers array of current user
   await usermodel.findByIdAndUpdate(
@@ -219,7 +245,7 @@ const followUser = asyncHandler(async (req, res, next) => {
     {
       $addToSet: { followers: currentUserId },
     },
-    { new: true }
+    { new: true },
   );
   res.json({ status: "success", message: "User followed successfully" });
 });
@@ -258,7 +284,7 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
     {
       $pull: { following: userIdToUnfollow },
     },
-    { new: true }
+    { new: true },
   );
   //remove currentUserId from followers array of userIdToUnfollow
   await usermodel.findByIdAndUpdate(
@@ -266,7 +292,7 @@ const unfollowUser = asyncHandler(async (req, res, next) => {
     {
       $pull: { followers: currentUserId },
     },
-    { new: true }
+    { new: true },
   );
   res.json({
     status: "success",

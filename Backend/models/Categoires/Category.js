@@ -14,7 +14,7 @@ const catSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-     //one category can have multiple posts so use array of object ids
+    //one category can have multiple posts so use array of object ids
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,12 +22,12 @@ const catSchema = new mongoose.Schema(
       },
     ],
 
-  //  post:{
-  //   type:mongoose.Schema.Types.ObjectId,
-  //   ref:"post",
-  //  }
+    //  post:{
+    //   type:mongoose.Schema.Types.ObjectId,
+    //   ref:"post",
+    //  }
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 module.exports = mongoose.model("Category", catSchema);

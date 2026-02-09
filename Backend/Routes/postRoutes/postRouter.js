@@ -1,4 +1,6 @@
 const express = require("express");
+const multer = require("multer");
+const { storage } = require("../../config/fileUplode.js");
 const {
   createPost,
   getallpost,
@@ -8,7 +10,7 @@ const {
   likePost,
   dislikePost,
   clapPost,
-  schedulePost
+  schedulePost,
 } = require("../../Controller/post/postController.js");
 
 const isLoggedIn = require("../../middleware/isLogedin.js");
@@ -16,12 +18,14 @@ const isLoggedIn = require("../../middleware/isLogedin.js");
 const isAccountverified = require("../../middleware/isaccountVerfied.js");
 
 const postrouter = express.Router();
+
+const upload = multer({ storage });
 //==============================================================================================
 //create new post route
-postrouter.post("/", isLoggedIn, isAccountverified, createPost);
+postrouter.post("/", isLoggedIn, isAccountverified,upload.single("file") ,createPost);
 
 //get all posts route
-postrouter.get("/", getallpost);
+postrouter.get("/", isLoggedIn, getallpost);
 
 //like post route (must be before /:id route to avoid conflict)
 postrouter.put("/like/:id", isLoggedIn, likePost);
@@ -44,7 +48,6 @@ postrouter.put("/clap/:id", isLoggedIn, clapPost);
 //schedule post route
 postrouter.put("/schedule/:id", isLoggedIn, schedulePost);
 //==============================================================================================
-
 
 //exporting post router
 module.exports = postrouter;

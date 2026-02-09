@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
 
     profilepic: {
       type: String,
-      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+      required: true,
     },
 
     coverimg: {
@@ -137,9 +137,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  {
-    timestamps: true, // fixed spelling
-  }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 // -------------------- METHODS --------------------
