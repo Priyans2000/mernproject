@@ -20,9 +20,10 @@ const INITIAL_STATE = {
 
 //login user Action
 const loginUser = createAsyncThunk(
-  "user/login",
+  "users/Login",
   async (payload, { rejectWithValue, getState, dispatch }) => {
     try {
+      console.log("comm started")
       const response = await axios.post(
         "http://localhost:5000/api/v1/users/login",
         payload,
@@ -73,21 +74,24 @@ export const userSlice = createSlice({
   // },
   //======================================
   //this code is for createAsyncThunk for login user
-  extra_reducers: (builder) => {
+  extraReducers: (builder) => {
     //login user
     builder.addCase(loginUser.pending, (state, action) => {
       state.loading = true;
+      console.log("pending");
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.loading = false;
       state.userAuth.userInfo = action.payload;
       state.success = true;
       state.userAuth.error = null;
+      console.log("fulfilled");
     });
     builder.addCase(loginUser.rejected, (state, action) => {
       state.loading = false;
       state.userAuth.error = action.payload;
-      state.success = true;
+      state.success = false;
+      console.log("rejected");
     });
   },
 });

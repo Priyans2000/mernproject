@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 const {
   GlobalErrorHandler,
   notfound,
@@ -16,6 +17,8 @@ const connectdb = require("./config/db");
 //=========================
 // sendMail("monikaagrawal7129@gmail.com","helloworld");
 //=========================
+
+
 //create express app
 const app = express();
 //load env variables
@@ -24,6 +27,8 @@ dotenv.config();
 connectdb();
 //middleware to parse data json request body
 app.use(express.json());
+//use cors 
+app.use(cors());
 //======================
 // routes
 app.use("/api/v1/users", userRoutes);

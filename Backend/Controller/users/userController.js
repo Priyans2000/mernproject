@@ -53,16 +53,19 @@ const login = asyncHandler(async (req, res, next) => {
   const user = await usermodel.findOne({ name });
   if (!user) {
     // return res.status(400).json({ message: "Invalid email or password" });
-    throw new Error("Invalid email or password");
+    res.status(401);
+    throw new Error("Invalid username or password");
   }
   //check if password is correct
   const isMatch = await bcrypt.compare(password, user?.password);
   if (!isMatch) {
     // return res.status(400).json({ message: "Invalid email or password" });
-    throw new Error("Invalid email or password");
+    res.status(401);
+    throw new Error("Invalid username or password");
   }
   user.lastlogin = Date.now();
-  await user.save();
+  // Don't let unrelated schema validation block login (e.g., legacy users missing required fields)
+  await user.save({ validateBeforeSave: false });
   //===========================================
   const { password: userpassword, ...safeuser } = user.toObject(); //remove password from user object
   //===========================================

@@ -15,6 +15,11 @@
 
 const jwt = require("jsonwebtoken");
 const token = (user)=>{
+if (!process.env.JWT_SECRET) {
+  const err = new Error("JWT_SECRET is missing in backend .env");
+  err.statusCode = 500;
+  throw err;
+}
 const payload = {
   user:{
     id : user._id,
