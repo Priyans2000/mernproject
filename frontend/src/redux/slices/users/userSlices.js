@@ -14,7 +14,9 @@ const INITIAL_STATE = {
   profile: {},
   userAuth: {
     error: null,
-    userInfo: {},
+    userInfo: localStorage.getItem("userInfo")
+      ? JSON.parse(localStorage.getItem("userInfo"))
+      : null,
   },
 };
 
@@ -23,17 +25,14 @@ const loginUser = createAsyncThunk(
   "users/Login",
   async (payload, { rejectWithValue, getState, dispatch }) => {
     try {
-      console.log("comm started")
-      const response = await axios.post(
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log("comm started");
+      const { data } = await axios.post(
         "http://localhost:5000/api/v1/users/login",
         payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
       );
-      return response.data;
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      return data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -78,6 +77,8 @@ export const userSlice = createSlice({
     //login user
     builder.addCase(loginUser.pending, (state, action) => {
       state.loading = true;
+      state.error = null;
+      state.success = false;
       console.log("pending");
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
@@ -88,8 +89,10 @@ export const userSlice = createSlice({
       console.log("fulfilled");
     });
     builder.addCase(loginUser.rejected, (state, action) => {
+      console.log("Rejected payload:", action.payload);
+      console.log("Rejected error:", action.error);
       state.loading = false;
-      state.userAuth.error = action.payload;
+      state.userAuth.error = action.payload?.message || "Login failed";
       state.success = false;
       console.log("rejected");
     });
