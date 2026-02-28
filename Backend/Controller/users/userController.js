@@ -17,8 +17,13 @@ const registerUser = asyncHandler(async (req, res, next) => {
     // return res.status(400).json({ message: "User already exists" });
     throw new Error("User already exists");
   }
-  const newuser = new usermodel({ name, email, password, profilepic : req.file.path, });
-   
+  const newuser = new usermodel({
+    name,
+    email,
+    password,
+    // profilepic: req.file.path, //for demo file uplode with multer
+  });
+
   //hash password before saving to db
   const salt = await bcrypt.genSalt(8);
   newuser.password = await bcrypt.hash(password, salt);
@@ -31,7 +36,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
     _id: newuser?._id, //optional chaining
     name: newuser?.name,
     email: newuser?.email,
-    password: newuser?.password,//never send
+    password: newuser?.password, //never send
     role: newuser?.role,
     profilepic: newuser?.profilepic,
   });
@@ -50,7 +55,7 @@ const login = asyncHandler(async (req, res, next) => {
   // try {
   const { name, password } = req.body;
   //check if user exists
-  const user = await usermodel.findOne({ name }).select("+password"); //select password field explicitly since it's set to select: false in schema  
+  const user = await usermodel.findOne({ name }).select("+password"); //select password field explicitly since it's set to select: false in schema
   if (!user) {
     // return res.status(400).json({ message: "Invalid email or password" });
     res.status(401);

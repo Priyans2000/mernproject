@@ -20,7 +20,7 @@ const router = express.Router();
 const upload = multer({ storage });
 
 //reg new ueser
-router.post("/register", upload.single("profilepic"), registerUser);
+router.post("/register" , registerUser);// , upload.single("profilepic") demo
 //====================================
 // login new user
 router.post("/login", login);

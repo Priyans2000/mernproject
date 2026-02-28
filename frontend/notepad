@@ -167,3 +167,151 @@
 
 // export default LoginPage;
 // =====================================================================================
+// import React, { useState } from "react";
+
+// const UserProfile = () => {
+//   const [profileData, setProfileData] = useState({
+//     id: "EMP-001",
+//     name: "Priyansh Agrawal",
+//     email: "priyansh@gmail.com",
+//     phone: "9876543210",
+//     address: "123 Street",
+//     city: "Bhopal",
+//     state: "MP",
+//     country: "India",
+//   });
+
+//   const [isEditing, setIsEditing] = useState(false);
+
+//   const handleChange = (e) => {
+//     setProfileData({
+//       ...profileData,
+//       [e.target.name]: e.target.value,
+//     });
+//     setIsEditing(true);
+//   };
+
+//   const handleSave = () => {
+//     alert("Data Saved ✅");
+//     setIsEditing(false);
+//   };
+
+//   const handleCancel = () => {
+//     window.location.reload();
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 p-6">
+//       {/* Header */}
+//       <div className="max-w-5xl mx-auto bg-white shadow-md rounded-lg p-4 flex justify-between items-center">
+//         <h2 className="text-xl font-semibold">User Profile</h2>
+
+//         <div className="space-x-3">
+//           <button
+//             onClick={handleCancel}
+//             disabled={!isEditing}
+//             className="px-4 py-2 border border-gray-400 rounded-lg disabled:opacity-50"
+//           >
+//             Cancel
+//           </button>
+
+//           <button
+//             onClick={handleSave}
+//             disabled={!isEditing}
+//             className="px-4 py-2 bg-indigo-600 text-white rounded-lg disabled:opacity-50"
+//           >
+//             Save
+//           </button>
+//         </div>
+//       </div>
+
+//       {/* Content */}
+//       <div className="max-w-5xl mx-auto mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+//         {/* Basic Info */}
+//         <div className="bg-white shadow-md rounded-lg p-6">
+//           <h3 className="text-lg font-semibold mb-4">Basic Info</h3>
+
+//           <div className="space-y-3">
+//             <input
+//               type="text"
+//               name="name"
+//               value={profileData.name}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+
+//             <div className="text-sm text-gray-500">
+//               ID: {profileData.id}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Contacts */}
+//         <div className="bg-white shadow-md rounded-lg p-6">
+//           <h3 className="text-lg font-semibold mb-4">Contacts</h3>
+
+//           <div className="space-y-3">
+//             <input
+//               type="email"
+//               name="email"
+//               value={profileData.email}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+
+//             <input
+//               type="text"
+//               name="phone"
+//               value={profileData.phone}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+//           </div>
+//         </div>
+
+//         {/* Address */}
+//         <div className="bg-white shadow-md rounded-lg p-6 md:col-span-2">
+//           <h3 className="text-lg font-semibold mb-4">Address</h3>
+
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//             <input
+//               type="text"
+//               name="address"
+//               value={profileData.address}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+
+//             <input
+//               type="text"
+//               name="city"
+//               value={profileData.city}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+
+//             <input
+//               type="text"
+//               name="state"
+//               value={profileData.state}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+
+//             <input
+//               type="text"
+//               name="country"
+//               value={profileData.country}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+//             />
+//           </div>
+//         </div>
+
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default UserProfile;

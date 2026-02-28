@@ -1,11 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/slices/users/userSlices";
 import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
+import Image from "../../assets/lack.jpeg";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,91 +36,106 @@ const LoginPage = () => {
 
     if (success) {
       toast.success("Login Successful 🎉");
+
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1000);
     }
-  }, [userAuth?.error, success]);
+  }, [userAuth?.error, success, navigate]);
 
   return (
-    <>
-      {/*  IMPORTANT */}
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: "#1f2937",
-            color: "#fff",
-            borderRadius: "10px",
-            padding: "16px",
-            fontSize: "14px",
-          },
-        }}
-      />
+   <>
+  <Toaster position="top-center" />
 
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-red-800 to-slate-900 flex items-center justify-center px-4">
-        <div className="w-full max-w-[460px]">
-          <div className="bg-white shadow-2xl rounded-2xl p-8">
-            <h1 className="text-3xl font-semibold text-center text-slate-900">
-              Welcome back 👋
-            </h1>
+  <div
+    className="relative min-h-screen bg-cover bg-center backdrop-blur-md flex items-center justify-center px-4"
+    style={{ backgroundImage: `url(${Image})` }}
+  >
+    <div className="w-full max-w-[460px]">
+      <div className="relative bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl rounded-2xl p-8 text-white">
 
-            <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
+        {/* Close Button */}
+        <button
+          onClick={() => navigate("/")}
+          className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition"
+        >
+          <X className="text-gray-700 w-5 h-5" />
+        </button>
+
+        <h1 className="text-3xl font-semibold text-center text-slate-900">
+          Welcome back 👋
+        </h1>
+
+        <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
+          
+          {/* Username */}
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter username"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full  text-black px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500"
+          />
+
+          {/* Password */}
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full text-black px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500"
+          />
+
+          {/* Remember + Forgot */}
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center gap-2 text-indigo-600 cursor-pointer">
               <input
-                type="text"
-                name="name"
-                placeholder="Enter username"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-slate-300"
+                type="checkbox"
+                className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
               />
+              Remember me
+            </label>
 
-              <input
-                // type="password"
-                name="password"
-                placeholder="Enter password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-lg border border-slate-300"
-              />
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 text-slate-600">
-                  <input
-                    type="checkbox"
-                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  Remember me
-                </label>
-                <a
-                  href="#"
-                  className="text-indigo-600 hover:underline font-medium"
-                >
-                  Forgot password?
-                </a>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 rounded-lg font-semibold text-white
-                           bg-gradient-to-r from-indigo-600 to-blue-600
-                           flex items-center justify-center gap-2"
-              >
-                {loading && (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                )}
-                {loading ? "Logging in..." : "Login Account"}
-              </button>
-              <p className="text-center text-sm text-slate-600 mt-6">
-                Don’t have an account?
-                <a
-                  href="#"
-                  className="text-indigo-600 font-semibold hover:underline ml-1"
-                >
-                  Register here
-                </a>
-              </p>
-            </form>
+            <span
+              onClick={() => navigate("/forgot-password")}
+              className="text-indigo-600 hover:underline font-medium cursor-pointer"
+            >
+              Forgot password?
+            </span>
           </div>
-        </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg font-semibold text-white
+                       bg-gradient-to-r from-indigo-600 to-blue-600
+                       flex items-center justify-center gap-2 hover:opacity-90 transition"
+          >
+            {loading && (
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            )}
+            {loading ? "Logging in..." : "Login Account"}
+          </button>
+
+          {/* Register Link */}
+          <p className="text-center text-sm text-black mt-6">
+            Don’t have an account?
+            <span
+              onClick={() => navigate("/register")}
+              className="text-indigo-600 font-semibold hover:underline ml-1 cursor-pointer"
+            >
+              Register here
+            </span>
+          </p>
+
+        </form>
       </div>
-    </>
+    </div>
+  </div>
+</>
   );
 };
 

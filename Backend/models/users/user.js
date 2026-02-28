@@ -45,7 +45,8 @@ const userSchema = new mongoose.Schema(
 
     profilepic: {
       type: String,
-      required: true,
+      // required: true, only for demo file uplode with multer
+      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
     },
 
     coverimg: {

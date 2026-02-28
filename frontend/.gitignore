@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -22,3 +23,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+=======
+Backend/notepad
+.env
+
+>>>>>>> 87f67ba1749aae73e4b750d8cdf6da9407520f80

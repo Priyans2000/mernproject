@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const INITIAL_STATE = {
+  logout: false,
   loading: false,
   error: null,
   success: false,
@@ -38,6 +39,12 @@ const loginUser = createAsyncThunk(
     }
   },
 );
+//======================================
+//logout user Action
+const logoutuser = createAsyncThunk("users/logout", async () => {
+  localStorage.removeItem("userInfo");
+  return true;
+});
 
 export const userSlice = createSlice({
   name: "user",
@@ -74,30 +81,49 @@ export const userSlice = createSlice({
   //======================================
   //this code is for createAsyncThunk for login user
   extraReducers: (builder) => {
-    //login user
-    builder.addCase(loginUser.pending, (state, action) => {
-      state.loading = true;
-      state.error = null;
-      state.success = false;
-      console.log("pending");
-    });
-    builder.addCase(loginUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.userAuth.userInfo = action.payload;
-      state.success = true;
-      state.userAuth.error = null;
-      console.log("fulfilled");
-    });
-    builder.addCase(loginUser.rejected, (state, action) => {
-      console.log("Rejected payload:", action.payload);
-      console.log("Rejected error:", action.error);
-      state.loading = false;
-      state.userAuth.error = action.payload?.message || "Login failed";
-      state.success = false;
-      console.log("rejected");
-    });
+    builder
+
+      // LOGIN CASES
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+        console.log("pending");
+      })
+
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userAuth.userInfo = action.payload;
+        state.success = true;
+        state.userAuth.error = null;
+        console.log("fulfilled");
+      })
+
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.userAuth.error = action.payload?.message || "Login failed";
+        state.success = false;
+           console.log("login faield");
+      })
+
+      // 🔥 LOGOUT CASE
+      .addCase(logoutuser.pending, (state) => {
+        state.loading = true;
+      })
+
+      .addCase(logoutuser.fulfilled, (state) => {
+        state.loading = false;
+        state.logout = true;
+        state.userAuth.userInfo = null;
+        state.userAuth.error = null;
+        state.success = false;
+      })
+
+      .addCase(logoutuser.rejected, (state) => {
+        state.loading = false;
+      });
   },
 });
 const userReducer = userSlice.reducer;
 export default userReducer;
-export { loginUser };
+export { loginUser, logoutuser };
